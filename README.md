@@ -1,1 +1,1 @@
-<h1>Hello ebat</h1>
+<h1>Hakaton repository</h1>
