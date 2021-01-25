@@ -13,7 +13,7 @@ class SmartParser
         $products = [];
         $str      = '';
         $start    = microtime(true);
-        echo "Fetching..." . "<br>";
+//        echo "Fetching..." . "<br>";
         $count = 0;
 
         $loop   = Factory::create();
@@ -40,19 +40,20 @@ class SmartParser
 
         }
         $loop->run();
-        echo "...done in " . (microtime(true) - $start) .
-            '<br> ' .
-            'count :' . $count .
-            '<br>'
-            . ' arry size : ' . strlen($str) . PHP_EOL;
+//        echo "...done in " . (microtime(true) - $start) .
+//            '<br> ' .
+//            'count :' . $count .
+//            '<br>'
+//            . ' arry size : ' . strlen($str) . PHP_EOL;
 
-        dd($products);
+//        dd($products);
+        return $products;
 
     }
 
     public function parser($text, $domain)
     {
-        echo "start parse... <br>" . PHP_EOL;
+//        echo "start parse... <br>" . PHP_EOL;
         $start = microtime(true);
 
         $pq = new PhpQuery();
@@ -60,7 +61,7 @@ class SmartParser
         $pq->load_str($text);
 
         $elems = $pq->query('a.product-tile.jsx-725860710');
-        echo "mid parse... " . (microtime(true) - $start) . "<br>" . PHP_EOL;
+//        echo "mid parse... " . (microtime(true) - $start) . "<br>" . PHP_EOL;
 
         $mass = [];
 
@@ -86,7 +87,7 @@ class SmartParser
             $mass[$key]['price_per_one'] = (int) $price;
             $mass[$key]['price_per_kg']  = (int) $price * $koef;
         }
-        echo "end parse... " . (microtime(true) - $start) . "<br>" . PHP_EOL;
+//        echo "end parse... " . (microtime(true) - $start) . "<br>" . PHP_EOL;
 
         return $mass;
 
