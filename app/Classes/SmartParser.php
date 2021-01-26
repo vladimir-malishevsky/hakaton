@@ -115,6 +115,8 @@ class SmartParser
 
     public function get_all_grechka($params)
     {
+        for ($i = 0; $i < count($this->urls); $i++)
+            $this->urls[$i] .= $params;
 
         return $this->get_grechka($this->urls);
     }
@@ -186,11 +188,13 @@ class SmartParser
 
         $brandElems = $document
             ->first('.catalog-filters__widget.jsx-54661519')
-            ->find('.SimpleCheckboxOptionAmounted.jsx-268113897');
+            ->find('.jsx-4009329735.check-list-item');
+
         foreach ($brandElems as $key => $el) {
             $name = trim($el->first('.SimpleCheckboxOptionAmounted__text.jsx-268113897')->text());
             $count = (int)trim($el->first('.SimpleCheckboxOptionAmounted__amount.jsx-268113897')->text());
             $brands[$key]['brand'] = $name;
+            $brands[$key]['attr'] = trim($el->first('.jsx-1839695721.Checkbox__input')->attr('name'));
             $brands[$key]['count'] = $count;
         }
 

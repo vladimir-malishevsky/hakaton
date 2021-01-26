@@ -14,11 +14,19 @@ class ProductsController extends Controller
      */
     public function index(Request $request)
     {
-        $params = 'sddsf';
+        $params = '?';
 
-//        if (filled($request->sort))
+        if (filled($request->brand)){
+            $params .= 'tm='.$request->brand;
+        }
+
+
+        if (filled($request->weight)){
+            $params .= 'weight='.$request->weight.'g';
+        }
 
         $parser = new SmartParser();
+
         return $parser->get_all_grechka($params);
     }
 
