@@ -83,7 +83,14 @@
             </div>
 
             <div class="row">
-                <h5>Ціна</h5>
+                <h5>Вага:</h5>
+                <select name="weight" id="weight_selector" class="bla">
+                    <option value="">не обрано</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <h5>Ціна:</h5>
                 <div class="col">
                     <input type="text" class="form-control" name="price_from" placeholder="Від">
                 </div>
@@ -92,6 +99,16 @@
                 </div>
             </div>
 
+{{--            <div class="row">--}}
+{{--                <h5>Вага:</h5>--}}
+{{--                <div class="col">--}}
+{{--                    <input type="text" class="form-control" name="weight_from" placeholder="Від">--}}
+{{--                </div>--}}
+{{--                <div class="col">--}}
+{{--                    <input type="text" class="form-control" name="weight_to" placeholder="До">--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
             <div class="row">
                 <h5>Пошук:</h5>
                 <input type="text" name="s_title" class="form-control" id="inputSearch" placeholder="Назва товару">
@@ -99,6 +116,7 @@
             <input type="submit" class="btn btn-success form-control mt-1" value="Відобразити">
         </form>
         <script>
+            var products = [];
             var items = document.querySelector('#items');
             var brand_selector = document.querySelector('#brand_selector');
 
@@ -119,52 +137,8 @@
                 else
                     return 1;
             }
-
-            function filter(params){
-                var params_arr = new URLSearchParams(params);
-
-                switch (params_arr.get('sort')) {
-                    case '1':
-                        products.data.sort(Compare_asc)
-                        break;
-                    case '2':
-                        products.data.sort(Compare_desc)
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-
-            async function getProducts(){
-                var preloader = document.querySelector('#items-preloader')
-                if (preloader.classList.contains('done'))
-                    preloader.classList.remove('done')
-
-
-                items.innerHTML = '';
-
-
-
-
-                var data = await fetch('http://hakaton/products');
-                var products = await data.json();
-
-
-
-
-
-                products.data.forEach((product) => {
-                    if (params_arr.get('price_from') || params_arr.get('price_to')){
-                        var from = params_arr.get('price_from') ?? 0;
-                        var to = params_arr.get('price_to') ?? 9999;
-                        if (!(product.price_per_one >= from && product.price_per_one <= to)) return;
-                    }
-                    if (params_arr.get('s_title')){
-                        console.log(product.title);
-                        if (!(product.title === params_arr.get('s_title'))) return;
-                    }
-                    items.innerHTML += `
+            function addProduct(product){
+                items.innerHTML += `
                             <div class="card_item">
                                 <div class="card_inner">
                                     <div class="card_top">
@@ -183,33 +157,92 @@
                                     </div>
                                 </div>
                             </div>`;
+            }
+
+            function filter(params){
+                var params_arr = new URLSearchParams(params);
+
+                items.innerHTML = '';
+
+                switch (params_arr.get('sort')) {
+                    case '1':
+                        products.data.sort(Compare_asc)
+                        break;
+                    case '2':
+                        products.data.sort(Compare_desc)
+                        break;
+                    default:
+                        break;
+                }
+
+
+                console.log(params_arr)
+
+
+                products.data.forEach((product) => {
+                    if (params_arr.get('brand')){
+                        var brand = params_arr.get('brand');
+                        if (!(product.brand === brand)) return;
+                    }
+
+                    if (params_arr.get('price_from') || params_arr.get('price_to')){
+                        var price_from = params_arr.get('price_from');
+                        var price_to = params_arr.get('price_to');
+                        if (!(price_from >= product.price_per_one && price_to <= product.price_per_one)) return;
+                    }
+
+                    // if (params_arr.get('weight')){
+                    //     var weight = params_arr.get('weight');
+                    //     if (!(product.weight_per_one === weight)) return;
+                    // }
+
+                    // if (params_arr.get('weight_from') || params_arr.get('weight_to')){
+                    //     var weight_from = params_arr.get('weight_from') ?? 0;
+                    //     var weight_to = params_arr.get('weight_to') ?? 9999;
+                    //     if (!(product.price_per_one >= weight_from && product.price_per_one <= weight_to)) return;
+                    // }
+
+                    if (params_arr.get('s_title')){
+                        console.log(product.title);
+                        if (!(product.title === params_arr.get('s_title'))) return;
+                    }
+                    addProduct(product);
+                });
+            }
+
+
+
+
+            async function getProducts(){
+                var preloader = document.querySelector('#items-preloader')
+                if (preloader.classList.contains('done'))
+                    preloader.classList.remove('done')
+
+                items.innerHTML = '';
+
+                var data = await fetch('http://hakaton/products');
+                products = await data.json();
+
+                products.data.forEach((product) => {
+                    addProduct(product);
                 })
 
 
                 products.brands.forEach((brand) => {
-                    brand_selector.innerHTML += `<option value="${brand.attr}">${brand.brand}</option>`;
+                    brand_selector.innerHTML += `<option value="${brand.brand}">${brand.brand}</option>`;
                 })
 
                 if (!preloader.classList.contains('done'))
                     preloader.classList.add('done')
             }
-            getProducts(''); // + location.href
+
+            getProducts();
 
             $('#params').submit(function (e) {
                 var $form = $(this);
-                console.log($form.serialize())
-                getProducts($form.serialize());
+                filter($form.serialize());
                 e.preventDefault();
             })
-
-            // var form = document.querySelector('#params')
-            //
-            // form.addEventListener('submit', function (e) {
-            //     console.log(this.serialize())
-            //     getProducts(this.serialize());
-            //
-            //     e.preventDefault();
-            // })
         </script>
     </div>
     <div id="SideBarText" onclick="SideBar_ShowHide();">Фільтри</div>
