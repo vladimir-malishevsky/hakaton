@@ -12,10 +12,11 @@ class ProductsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if (filled($request->sort))
         $parser = new SmartParser();
-        return $parser->get_grechka();
+        return $parser->get_all_grechka();
     }
 
     /**
