@@ -99,6 +99,10 @@
             <input type="submit" class="btn btn-success form-control mt-1" value="Відобразити">
         </form>
         <script>
+            var items = document.querySelector('#items');
+            var brand_selector = document.querySelector('#brand_selector');
+
+
             function Compare_desc(a, b){
                 if (a.price_per_one === b.price_per_one) return 0;
 
@@ -116,31 +120,8 @@
                     return 1;
             }
 
-
-            async function getProducts(params){
-                var preloader = document.querySelector('#items-preloader')
-                if (preloader.classList.contains('done'))
-                    preloader.classList.remove('done')
-
-                var items = document.querySelector('#items');
-                items.innerHTML = '';
-
-
-                var brand_selector = document.querySelector('#brand_selector');
-                // var sort_selector = document.querySelector('#sort_selector');
+            function filter(params){
                 var params_arr = new URLSearchParams(params);
-
-
-
-
-                var data = await fetch('http://hakaton/products?'+params);
-                var products = await data.json();
-
-
-                console.log(products);
-
-
-
 
                 switch (params_arr.get('sort')) {
                     case '1':
@@ -152,6 +133,24 @@
                     default:
                         break;
                 }
+            }
+
+
+            async function getProducts(){
+                var preloader = document.querySelector('#items-preloader')
+                if (preloader.classList.contains('done'))
+                    preloader.classList.remove('done')
+
+
+                items.innerHTML = '';
+
+
+
+
+                var data = await fetch('http://hakaton/products');
+                var products = await data.json();
+
+
 
 
 
