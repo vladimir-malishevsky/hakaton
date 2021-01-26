@@ -106,18 +106,16 @@ class SmartParser
 {
     private $data;
 
-    private $urls = array(
+    private $urls = [
         "https://auchan.zakaz.ua/ru/categories/buckwheat-auchan/",
         'https://novus.zakaz.ua/ru/categories/buckwheat/',
         'https://metro.zakaz.ua/ru/categories/buckwheat-metro/',
-    );
+    ];
 
 
     public function get_all_grechka($params)
     {
-        foreach ($this->urls as $url)
-            $url .= $params;
-        dd($this->urls);
+
         return $this->get_grechka($this->urls);
     }
 
