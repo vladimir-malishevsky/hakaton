@@ -113,8 +113,11 @@ class SmartParser
     );
 
 
-    public function get_all_grechka()
+    public function get_all_grechka($params)
     {
+        foreach ($this->urls as $url)
+            $url .= $params;
+        dd($this->urls);
         return $this->get_grechka($this->urls);
     }
 
