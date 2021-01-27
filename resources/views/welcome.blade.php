@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{asset('css/flex.css')}}">
     <link rel="stylesheet" href="{{asset('css/preloader.css')}}">
     <script src="{{asset('js/jquery.min.js')}}"></script>
+{{--    <script src="{{asset('js/SideBarMenu.js')}}"></script>--}}
 </head>
 
 <body>
@@ -57,14 +58,6 @@
 
 <div id="SideBar">
     <div id="SideBarMenu">
-{{--        <div class="row">--}}
-{{--            <div class="col text-white">--}}
-{{--                <form method="get">--}}
-{{--                    <h5>sdf</h5>--}}
-{{--                    <input type="text" class="form-control">--}}
-{{--                </form>--}}
-{{--            </div>--}}
-{{--        </div>--}}
         <form id="params" method="get" class="cl1">
             <div class="row">
                 <h5>Сортування:</h5>
@@ -99,15 +92,6 @@
                 </div>
             </div>
 
-{{--            <div class="row">--}}
-{{--                <h5>Вага:</h5>--}}
-{{--                <div class="col">--}}
-{{--                    <input type="text" class="form-control" name="weight_from" placeholder="Від">--}}
-{{--                </div>--}}
-{{--                <div class="col">--}}
-{{--                    <input type="text" class="form-control" name="weight_to" placeholder="До">--}}
-{{--                </div>--}}
-{{--            </div>--}}
 
             <div class="row">
                 <h5>Пошук:</h5>
@@ -119,6 +103,7 @@
             var products = [];
             var items = document.querySelector('#items');
             var brand_selector = document.querySelector('#brand_selector');
+            var weight_selector = document.querySelector('#weight_selector');
 
 
             function Compare_desc(a, b){
@@ -175,10 +160,6 @@
                         break;
                 }
 
-
-                console.log(params_arr)
-
-
                 products.data.forEach((product) => {
                     if (params_arr.get('brand')){
                         var brand = params_arr.get('brand');
@@ -186,15 +167,17 @@
                     }
 
                     if (params_arr.get('price_from') || params_arr.get('price_to')){
-                        var price_from = params_arr.get('price_from');
-                        var price_to = params_arr.get('price_to');
-                        if (!(price_from >= product.price_per_one && price_to <= product.price_per_one)) return;
+                        var price_from = params_arr.get('price_from') ? parseInt(params_arr.get('price_from')) : 0;
+                        var price_to = params_arr.get('price_to') ? parseInt(params_arr.get('price_to')) : 0;
+                        var price = product.price_per_one;
+
+                        if (!(price_from <= price && price_to >= price)) return;
                     }
 
-                    // if (params_arr.get('weight')){
-                    //     var weight = params_arr.get('weight');
-                    //     if (!(product.weight_per_one === weight)) return;
-                    // }
+                    if (params_arr.get('weight')){
+                        var weight = params_arr.get('weight');
+                        if (!(product.weight_per_one === weight)) return;
+                    }
 
                     // if (params_arr.get('weight_from') || params_arr.get('weight_to')){
                     //     var weight_from = params_arr.get('weight_from') ?? 0;
@@ -209,8 +192,6 @@
                     addProduct(product);
                 });
             }
-
-
 
 
             async function getProducts(){
@@ -230,6 +211,10 @@
 
                 products.brands.forEach((brand) => {
                     brand_selector.innerHTML += `<option value="${brand.brand}">${brand.brand}</option>`;
+                })
+
+                products.weights.forEach((weight) => {
+                    weight_selector.innerHTML += `<option value="${weight.weight}">${weight.weight}</option>`;
                 })
 
                 if (!preloader.classList.contains('done'))

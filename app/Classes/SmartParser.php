@@ -113,11 +113,8 @@ class SmartParser
     ];
 
 
-    public function get_all_grechka($params)
+    public function get_all_grechka()
     {
-        for ($i = 0; $i < count($this->urls); $i++)
-            $this->urls[$i] .= $params;
-
         return $this->get_grechka($this->urls);
     }
 
@@ -198,6 +195,16 @@ class SmartParser
             $brands[$key]['count'] = $count;
         }
 
+//        $weightElems = $document
+//            ->find('.jsx-54661519.catalog-filters__widget')[1]
+//            ->find('.jsx-4009329735.check-list-item');
+//
+//
+//        foreach ($weightElems as $key => $el) {
+//            $weights[$key]['weight'] = trim($el->first('.jsx-268113897.SimpleCheckboxOptionAmounted__text')->text());
+//        }
+
+
         $elems = $document->find('.product-tile');
 
         foreach ($elems as $key => $el) {
@@ -211,6 +218,7 @@ class SmartParser
 
             $mass['data'][$key]['title'] = $title;
             $mass['data'][$key]['brand'] = 'Невідомо';
+
             foreach ($brands as $brand){
                 if (stristr(strtolower($title), strtolower($brand['brand'])) !== false){
                     $mass['data'][$key]['brand'] = $brand['brand'];
@@ -219,13 +227,17 @@ class SmartParser
             }
 
             $mass['data'][$key]['weight_per_one'] = $weight;
-            $weights[] = $weight;
+
+
+
+            if ($this->notInArr($weights, $weight))
+                $weights[]['weight'] = $weight;
+
             $mass['data'][$key]['img'] = $img;
             $mass['data'][$key]['store'] = preg_split("/\./", parse_url($domain, PHP_URL_HOST))[0];
 
             $mass['data'][$key]['src'] = $domain . $src;
 
-            $koef = 1;
             if (preg_match('/ г/', $mass['data'][$key]['weight_per_one'])) {
 
                 $number = (int)preg_replace('/[^0-9]/', '', $mass['data'][$key]['weight_per_one']);
@@ -236,7 +248,6 @@ class SmartParser
                 $number = (int)preg_replace('/[^0-9]/', '', $mass['data'][$key]['weight_per_one']);
                 $koef = 1 / $number;
                 $mass['data'][$key]['weight_type'] = 'kg';
-                // ;
 
             }
 
@@ -247,13 +258,21 @@ class SmartParser
         unset($elems);
         unset($document);
 
-
         $mass['brands'] = $brands;
 
         $mass['weights'] = $weights;
 
         return $mass;
     }
+
+    function notInArr($arr, $val){
+        foreach ($arr as $i){
+            if ($i['weight'] == $val)
+                return false;
+        }
+        return true;
+    }
+
 
     public function merge_brand_list($mass1, $mass2)
     {
