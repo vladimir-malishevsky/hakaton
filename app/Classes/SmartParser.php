@@ -195,16 +195,6 @@ class SmartParser
             $brands[$key]['count'] = $count;
         }
 
-//        $weightElems = $document
-//            ->find('.jsx-54661519.catalog-filters__widget')[1]
-//            ->find('.jsx-4009329735.check-list-item');
-//
-//
-//        foreach ($weightElems as $key => $el) {
-//            $weights[$key]['weight'] = trim($el->first('.jsx-268113897.SimpleCheckboxOptionAmounted__text')->text());
-//        }
-
-
         $elems = $document->find('.product-tile');
 
         foreach ($elems as $key => $el) {
@@ -229,9 +219,7 @@ class SmartParser
             $mass['data'][$key]['weight_per_one'] = $weight;
 
 
-
-            if ($this->notInArr($weights, $weight))
-                $weights[]['weight'] = $weight;
+            $weights[] = $weight;
 
             $mass['data'][$key]['img'] = $img;
             $mass['data'][$key]['store'] = preg_split("/\./", parse_url($domain, PHP_URL_HOST))[0];
@@ -263,14 +251,6 @@ class SmartParser
         $mass['weights'] = $weights;
 
         return $mass;
-    }
-
-    function notInArr($arr, $val){
-        foreach ($arr as $i){
-            if ($i['weight'] == $val)
-                return false;
-        }
-        return true;
     }
 
 

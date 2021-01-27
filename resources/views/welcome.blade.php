@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <head>
+    <title>Hakaton 2021</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
@@ -10,7 +11,6 @@
     <link rel="stylesheet" href="{{asset('css/flex.css')}}">
     <link rel="stylesheet" href="{{asset('css/preloader.css')}}">
     <script src="{{asset('js/jquery.min.js')}}"></script>
-{{--    <script src="{{asset('js/SideBarMenu.js')}}"></script>--}}
 </head>
 
 <body>
@@ -106,6 +106,7 @@
             var weight_selector = document.querySelector('#weight_selector');
 
 
+
             function Compare_desc(a, b){
                 if (a.price_per_one === b.price_per_one) return 0;
 
@@ -144,12 +145,12 @@
                             </div>`;
             }
 
-            function filter(params){
-                var params_arr = new URLSearchParams(params);
+            function showProducts(params){
+                var form_params = new URLSearchParams(params);
 
                 items.innerHTML = '';
 
-                switch (params_arr.get('sort')) {
+                switch (form_params.get('sort')) {
                     case '1':
                         products.data.sort(Compare_asc)
                         break;
@@ -161,36 +162,32 @@
                 }
 
                 products.data.forEach((product) => {
-                    if (params_arr.get('brand')){
-                        var brand = params_arr.get('brand');
+                    if (form_params.get('brand')){
+                        var brand = form_params.get('brand');
                         if (!(product.brand === brand)) return;
                     }
 
-                    if (params_arr.get('price_from') || params_arr.get('price_to')){
-                        var price_from = params_arr.get('price_from') ? parseInt(params_arr.get('price_from')) : 0;
-                        var price_to = params_arr.get('price_to') ? parseInt(params_arr.get('price_to')) : 0;
+                    if (form_params.get('price_from') || form_params.get('price_to')){
+                        var price_from = form_params.get('price_from') ? parseInt(form_params.get('price_from')) : 0;
+                        var price_to = form_params.get('price_to') ? parseInt(form_params.get('price_to')) : 9999;
                         var price = product.price_per_one;
 
                         if (!(price_from <= price && price_to >= price)) return;
                     }
 
-                    if (params_arr.get('weight')){
-                        var weight = params_arr.get('weight');
+                    if (form_params.get('weight')){
+                        var weight = form_params.get('weight');
                         if (!(product.weight_per_one === weight)) return;
                     }
 
-                    // if (params_arr.get('weight_from') || params_arr.get('weight_to')){
-                    //     var weight_from = params_arr.get('weight_from') ?? 0;
-                    //     var weight_to = params_arr.get('weight_to') ?? 9999;
-                    //     if (!(product.price_per_one >= weight_from && product.price_per_one <= weight_to)) return;
-                    // }
-
-                    if (params_arr.get('s_title')){
-                        console.log(product.title);
-                        if (!(product.title === params_arr.get('s_title'))) return;
+                    if (form_params.get('s_title')){
+                        if (!(product.title === form_params.get('s_title'))) return;
                     }
                     addProduct(product);
                 });
+
+                if (!items.innerHTML)
+                    items.innerHTML = '<div class="preloader"><p>Товарів не знайдено!</p></div>';
             }
 
 
@@ -204,18 +201,14 @@
                 var data = await fetch('http://hakaton/products');
                 products = await data.json();
 
-                products.data.forEach((product) => {
-                    addProduct(product);
-                })
-
+                showProducts(window.location.href.split('?')[1]);
 
                 products.brands.forEach((brand) => {
                     brand_selector.innerHTML += `<option value="${brand.brand}">${brand.brand}</option>`;
                 })
 
-                products.weights.forEach((weight) => {
-                    weight_selector.innerHTML += `<option value="${weight.weight}">${weight.weight}</option>`;
-                })
+                for (var el in products.weights)
+                    weight_selector.innerHTML += `<option value="${products.weights[el]}">${products.weights[el]}</option>`;
 
                 if (!preloader.classList.contains('done'))
                     preloader.classList.add('done')
@@ -225,7 +218,9 @@
 
             $('#params').submit(function (e) {
                 var $form = $(this);
-                filter($form.serialize());
+                var params = $form.serialize();
+                history.pushState(null, null, '?'+params);
+                showProducts(params);
                 e.preventDefault();
             })
         </script>
