@@ -17,7 +17,10 @@
         "imangazaliev/didom": "^1.16",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
-        "phpquery/phpquery": "^0.0.4"
+        "phpquery/phpquery": "^0.0.4",
+        "react/event-loop": "^1.1",
+        "react/http": "^1.2",
+        "symfony/dom-crawler": "^5.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

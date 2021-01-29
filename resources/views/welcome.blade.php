@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -10,7 +12,7 @@
 
     <link rel="stylesheet" href="{{asset('css/flex.css')}}">
     <link rel="stylesheet" href="{{asset('css/preloader.css')}}">
-    <script src="{{asset('js/jquery.min.js')}}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 
 <body>
@@ -19,13 +21,13 @@
     <nav>
         <ul class="nav_links">
             <li>
-                <a href="#">MAIN</a>
+                <a href="/">MAIN</a>
             </li>
             <li>
-                <a href="#">TOP 10</a>
+                <a href="/top">TOP 10</a>
             </li>
             <li>
-                <a href="#">GRAPHIC</a>
+                <a href="/graph">GRAPHIC</a>
             </li>
         </ul>
     </nav>
@@ -41,19 +43,16 @@
 </div>
 
 <script type="text/javascript">
-
     function SideBar_ShowHide()
     {
         var _sb = document.getElementById("SideBar");
         var _width = 'auto';
-
         if(_sb.style.width == _width) {
             _sb.style.width = '0px';
             return;
         }
         _sb.style.width = _width;
     };
-
 </script>
 
 <div id="SideBar">
@@ -104,12 +103,8 @@
             var items = document.querySelector('#items');
             var brand_selector = document.querySelector('#brand_selector');
             var weight_selector = document.querySelector('#weight_selector');
-
-
-
             function Compare_desc(a, b){
                 if (a.price_per_one === b.price_per_one) return 0;
-
                 if (a.price_per_one > b.price_per_one)
                     return -1;
                 else
@@ -117,7 +112,6 @@
             }
             function Compare_asc(a, b){
                 if (a.price_per_one === b.price_per_one) return 0;
-
                 if (a.price_per_one < b.price_per_one)
                     return -1;
                 else
@@ -144,12 +138,9 @@
                                 </div>
                             </div>`;
             }
-
             function showProducts(params){
                 var form_params = new URLSearchParams(params);
-
                 items.innerHTML = '';
-
                 switch (form_params.get('sort')) {
                     case '1':
                         products.data.sort(Compare_asc)
@@ -160,62 +151,48 @@
                     default:
                         break;
                 }
-
                 products.data.forEach((product) => {
                     if (form_params.get('brand')){
                         var brand = form_params.get('brand');
-                        if (!(product.brand === brand)) return;
+                        if (!(product.brand.includes(brand))) return;
                     }
 
                     if (form_params.get('price_from') || form_params.get('price_to')){
                         var price_from = form_params.get('price_from') ? parseInt(form_params.get('price_from')) : 0;
                         var price_to = form_params.get('price_to') ? parseInt(form_params.get('price_to')) : 9999;
                         var price = product.price_per_one;
-
                         if (!(price_from <= price && price_to >= price)) return;
                     }
-
                     if (form_params.get('weight')){
                         var weight = form_params.get('weight');
                         if (!(product.weight_per_one === weight)) return;
                     }
-
                     if (form_params.get('s_title')){
-                        if (!(product.title === form_params.get('s_title'))) return;
+                        if (!(product.title.includes(form_params.get('s_title')))) return;
                     }
                     addProduct(product);
                 });
-
                 if (!items.innerHTML)
                     items.innerHTML = '<div class="preloader"><p>Товарів не знайдено!</p></div>';
             }
-
-
             async function getProducts(){
                 var preloader = document.querySelector('#items-preloader')
                 if (preloader.classList.contains('done'))
                     preloader.classList.remove('done')
-
                 items.innerHTML = '';
-
-                var data = await fetch('http://hakaton/products');
+                var data = await fetch('http://ВАШ ДОМЕН/api/all');
                 products = await data.json();
-
+                console.log(products)
                 showProducts(window.location.href.split('?')[1]);
-
                 products.brands.forEach((brand) => {
                     brand_selector.innerHTML += `<option value="${brand.brand}">${brand.brand}</option>`;
                 })
-
                 for (var el in products.weights)
                     weight_selector.innerHTML += `<option value="${products.weights[el]}">${products.weights[el]}</option>`;
-
                 if (!preloader.classList.contains('done'))
                     preloader.classList.add('done')
             }
-
             getProducts();
-
             $('#params').submit(function (e) {
                 var $form = $(this);
                 var params = $form.serialize();

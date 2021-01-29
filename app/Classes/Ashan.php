@@ -4,12 +4,11 @@ namespace App\Classes;
 use Illuminate\Support\Facades\Http;
 use PhpQuery\PhpQuery;
 
-class Auchan
+class Ashan
 {
-    public static function get_grechka()
+    public static function get_grechka1()
     {
         $res = Http::get('https://auchan.zakaz.ua/ru/categories/buckwheat-auchan/');
-
 
         $pq = new PhpQuery();
 
@@ -20,6 +19,7 @@ class Auchan
         $mass = [];
 
         foreach ($elems as $key => $el) {
+
             $new_html = $pq->outerHTML($el);
             $pq->load_str($new_html);
             $title                        = $el->getAttribute('title');
@@ -28,18 +28,18 @@ class Auchan
             $weight                       = trim($pq->query('.product-tile__weight.jsx-725860710')[0]->nodeValue);
             $img                          = trim($pq->query('.product-tile__image-i.jsx-725860710')[0]->getAttribute('src'));
             $mass[$key]['title']          = utf8_decode($title);
-            $mass[$key]['brand']          = utf8_decode($title);
             $mass[$key]['weight_per_one'] = utf8_decode(utf8_decode($weight));
             $mass[$key]['img']            = $img;
-            $mass[$key]['src']            = 'https://auchan.zakaz.ua/' . $src;
+            $mass[$key]['src']            = 'https://metro.zakaz.ua/' . $src;
             $koef                         = 1;
             if (preg_match('/ г/', $mass[$key]['weight_per_one'])) {
-                $entries = preg_split('/ /', $mass[$key]['weight_per_one']);
+                $entries = preg_split('/ /', trim($mass[$key]['weight_per_one']));
                 $number  = (int) $entries[0];
                 $koef    = 1000 / $number;
             }
             $mass[$key]['price_per_one'] = (int) $price;
             $mass[$key]['price_per_kg']  = (int) $price * $koef;
+
         }
         return $mass;
     }

@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\BaseController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,10 +12,13 @@ use App\Http\Controllers\ProductsController;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
+Route::get('graph', [BaseController::class, "graph"]);
+Route::get('top', [BaseController::class, "top"]);
+Route::get('/', [BaseController::class, "index"]);
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/all', function (){
+    $parser = new \App\Classes\Parser();
+    $data = $parser->get_all_grechka();
+    return $data;
 });
-
-Route::apiResource('/products', 'App\Http\Controllers\ProductsController');

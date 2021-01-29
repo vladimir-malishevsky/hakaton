@@ -33,7 +33,7 @@ class Metro
             $mass[$key]['src']            = 'https://metro.zakaz.ua/' . $src;
             $koef                         = 1;
             if (preg_match('/ г/', $mass[$key]['weight_per_one'])) {
-                $entries = preg_split('/ /', $mass[$key]['weight_per_one']);
+                $entries = preg_split('/ /', trim($mass[$key]['weight_per_one']));
                 $number  = (int) $entries[0];
                 $koef    = 1000 / $number;
             }
